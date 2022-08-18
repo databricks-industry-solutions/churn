@@ -325,7 +325,7 @@ shutil.rmtree('dbfs/tmp/kkbox_churn/silver/train', ignore_errors=True)
 # MAGIC val data = spark
 # MAGIC   .read
 # MAGIC   .option("header", value = true)
-# MAGIC   .csv("/tmp/kkbox/transactions/")
+# MAGIC   .csv("/tmp/kkbox_churn/transactions/")
 # MAGIC  
 # MAGIC val historyCutoff = "20170131"
 # MAGIC  
