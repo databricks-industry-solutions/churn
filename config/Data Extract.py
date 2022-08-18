@@ -26,13 +26,16 @@ os.environ['kaggle_key'] = dbutils.secrets.get("solution-accelerator-cicd", "kag
 # COMMAND ----------
 
 # MAGIC %sh -e
-# MAGIC rm -rf /dbfs/tmp/kkbox_churn/raw/
-# MAGIC mkdir -p /dbfs/tmp/kkbox_churn/raw/
-# MAGIC cd /dbfs/tmp/kkbox_churn/raw/
+# MAGIC cd /databricks/driver
 # MAGIC export KAGGLE_USERNAME=$kaggle_username
 # MAGIC export KAGGLE_KEY=$kaggle_key
 # MAGIC kaggle competitions download -c kkbox-churn-prediction-challenge
-# MAGIC unzip kkbox-churn-prediction-challenge.zip
+# MAGIC unzip -o kkbox-churn-prediction-challenge.zip
+# MAGIC py7zr x members_v3.csv.7z
+# MAGIC py7zr x transactions.csv.7z
+# MAGIC py7zr x transactions_v2.csv.7z
+# MAGIC py7zr x user_logs.csv.7z
+# MAGIC py7zr x user_logs_v2.csv.7z
 
 # COMMAND ----------
 
@@ -40,10 +43,16 @@ os.environ['kaggle_key'] = dbutils.secrets.get("solution-accelerator-cicd", "kag
 
 # COMMAND ----------
 
-# MAGIC %sh -e
-# MAGIC cd /dbfs/tmp/kkbox_churn/
-# MAGIC py7zr x raw/members_v3.csv.7z members/
-# MAGIC py7zr x raw/transactions.csv.7z transactions/
-# MAGIC py7zr x raw/transactions_v2.csv.7z transactions/
-# MAGIC py7zr x raw/user_logs.csv.7z user_logs/
-# MAGIC py7zr x raw/user_logs_v2.csv.7z user_logs/
+dbutils.fs.mv("file:/databricks/driver/members_v3.csv", "dbfs:/tmp/kkbox_churn/members/members_v3.csv")
+dbutils.fs.mv("file:/databricks/driver/transactions.csv", "dbfs:/tmp/kkbox_churn/transactions/transactions.csv")
+dbutils.fs.mv("file:/databricks/driver/data/churn_comp_refresh/transactions_v2.csv", "dbfs:/tmp/kkbox_churn/transactions/transactions_v2.csv")
+dbutils.fs.mv("file:/databricks/driver/user_logs.csv", "dbfs:/tmp/kkbox_churn/user_logs/user_logs.csv")
+dbutils.fs.mv("file:/databricks/driver/data/churn_comp_refresh/user_logs_v2.csv", "dbfs:/tmp/kkbox_churn/user_logs/user_logs_v2.csv")
+
+# COMMAND ----------
+
+# MAGIC %fs ls /tmp/kkbox_churn/transactions/
+
+# COMMAND ----------
+
+
