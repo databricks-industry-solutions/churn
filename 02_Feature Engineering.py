@@ -30,7 +30,7 @@ spark.sql(f'USE {database_name}')
 # MAGIC LEFT OUTER JOIN (   -- subscriptions not yet churned heading into the period of interest
 # MAGIC   SELECT *
 # MAGIC   FROM subscription_windows 
-# MAGIC   WHERE subscription_start < cast('2017-02-01' as date)  AND subscription_end > cast('2017-02-01' as date) - interval 30 days
+# MAGIC   WHERE subscription_start < '2017-02-01' AND subscription_end > '2017-02-01' - interval 30 days
 # MAGIC   )b
 # MAGIC   ON a.msno=b.msno
 # MAGIC LEFT OUTER JOIN (
@@ -38,7 +38,7 @@ spark.sql(f'USE {database_name}')
 # MAGIC     subscription_id,
 # MAGIC     MAX(transaction_date) as last_at
 # MAGIC   FROM transactions_enhanced
-# MAGIC   WHERE transaction_date < cast('2017-02-01' as date) 
+# MAGIC   WHERE transaction_date < '2017-02-01'
 # MAGIC   GROUP BY subscription_id
 # MAGIC   ) c
 # MAGIC   ON b.subscription_id=c.subscription_id
@@ -66,7 +66,7 @@ spark.sql(f'USE {database_name}')
 # MAGIC     LEFT OUTER JOIN (
 # MAGIC       SELECT *
 # MAGIC       FROM subscription_windows 
-# MAGIC       WHERE subscription_start < cast('2017-02-01' as date)  AND subscription_end > cast('2017-02-01' as date) - interval 30 days
+# MAGIC       WHERE subscription_start < '2017-02-01' AND subscription_end > '2017-02-01' - interval 30 days
 # MAGIC       )b
 # MAGIC       ON a.msno=b.msno
 # MAGIC     LEFT OUTER JOIN (
@@ -74,7 +74,7 @@ spark.sql(f'USE {database_name}')
 # MAGIC         subscription_id,
 # MAGIC         MAX(transaction_date) as last_at
 # MAGIC       FROM transactions_enhanced
-# MAGIC       WHERE transaction_date < cast('2017-02-01' as date) 
+# MAGIC       WHERE transaction_date < '2017-02-01'
 # MAGIC       GROUP BY subscription_id
 # MAGIC       ) c
 # MAGIC       ON b.subscription_id=c.subscription_id
@@ -88,7 +88,7 @@ spark.sql(f'USE {database_name}')
 # MAGIC     c.total_list_price,
 # MAGIC     c.total_amount_paid,
 # MAGIC     c.total_discount,
-# MAGIC     DATEDIFF(cast('2017-02-01' as date) , LAST(a.transaction_date) OVER(PARTITION BY a.subscription_id ORDER BY a.transaction_date)) as days_since_last_account_action,
+# MAGIC     DATEDIFF('2017-02-01', LAST(a.transaction_date) OVER(PARTITION BY a.subscription_id ORDER BY a.transaction_date)) as days_since_last_account_action,
 # MAGIC     LAST(a.plan_list_price) OVER(PARTITION BY a.subscription_id ORDER BY a.transaction_date) as last_plan_list_price,
 # MAGIC     LAST(a.actual_amount_paid) OVER(PARTITION BY a.subscription_id ORDER BY a.transaction_date) as last_actual_amount_paid,
 # MAGIC     LAST(a.discount) OVER(PARTITION BY a.subscription_id ORDER BY a.transaction_date) as last_discount,
@@ -103,7 +103,7 @@ spark.sql(f'USE {database_name}')
 # MAGIC     LAST(a.change_in_cancellation) OVER(PARTITION BY a.subscription_id ORDER BY a.transaction_date) as last_change_in_cancellation,
 # MAGIC     LAST(a.change_in_auto_renew) OVER(PARTITION BY a.subscription_id ORDER BY a.transaction_date) as last_change_in_auto_renew,
 # MAGIC     LAST(a.days_change_in_membership_expire_date) OVER(PARTITION BY a.subscription_id ORDER BY a.transaction_date) as last_days_change_in_membership_expire_date,
-# MAGIC     DATEDIFF(cast('2017-02-01' as date) , LAST(a.membership_expire_date) OVER(PARTITION BY a.subscription_id ORDER BY a.transaction_date)) as days_until_expiration,
+# MAGIC     DATEDIFF('2017-02-01', LAST(a.membership_expire_date) OVER(PARTITION BY a.subscription_id ORDER BY a.transaction_date)) as days_until_expiration,
 # MAGIC     d.total_subscription_count,
 # MAGIC     e.city,
 # MAGIC     CASE WHEN e.bd < 10 THEN NULL WHEN e.bd > 70 THEN NULL ELSE e.bd END as bd,
@@ -130,7 +130,7 @@ spark.sql(f'USE {database_name}')
 # MAGIC       msno,
 # MAGIC       COUNT(*) as total_subscription_count
 # MAGIC     FROM subscription_windows
-# MAGIC     WHERE subscription_start < cast('2017-02-01' as date) 
+# MAGIC     WHERE subscription_start < '2017-02-01'
 # MAGIC     GROUP BY msno
 # MAGIC     ) d
 # MAGIC     ON a.msno=d.msno
@@ -162,7 +162,7 @@ spark.sql(f'USE {database_name}')
 # MAGIC     LEFT OUTER JOIN (  -- subscriptions not yet churned heading into the period of interest
 # MAGIC       SELECT *
 # MAGIC       FROM subscription_windows 
-# MAGIC       WHERE subscription_start < '2017-03-01' AND subscription_end > cast('2017-03-01' as date) - interval 30 days
+# MAGIC       WHERE subscription_start < '2017-03-01' AND subscription_end > '2017-03-01' - interval 30 days
 # MAGIC       )b
 # MAGIC       ON a.msno=b.msno
 # MAGIC     LEFT OUTER JOIN (
@@ -284,16 +284,16 @@ spark.sql(f'USE {database_name}')
 # MAGIC   a.msno,
 # MAGIC   b.subscription_id,
 # MAGIC   CASE 
-# MAGIC     WHEN b.subscription_start < cast('2017-02-01' as date) - interval 30 days THEN cast('2017-02-01' as date) - interval 30 days-- cap subscription info to 30-days prior to start of period
+# MAGIC     WHEN b.subscription_start < '2017-02-01' - interval 30 days THEN '2017-02-01' - interval 30 days -- cap subscription info to 30-days prior to start of period
 # MAGIC     ELSE b.subscription_start 
 # MAGIC     END as start_at,
-# MAGIC   cast('2017-02-01' as date) - interval 1 day as end_at,
+# MAGIC   '2017-02-01'- interval 1 day as end_at,
 # MAGIC   c.last_at as last_exp_at
 # MAGIC FROM train a  -- LIMIT ANALYSIS TO AT-RISK SUBSCRIBERS IN THE TRAINING PERIOD
 # MAGIC LEFT OUTER JOIN (   -- subscriptions not yet churned heading into the period of interest 
 # MAGIC   SELECT *
 # MAGIC   FROM subscription_windows 
-# MAGIC   WHERE subscription_start < cast('2017-02-01' as date)  AND subscription_end > cast('2017-02-01' as date) - interval 30 days
+# MAGIC   WHERE subscription_start < '2017-02-01' AND subscription_end > '2017-02-01' - interval 30 days
 # MAGIC   )b
 # MAGIC   ON a.msno=b.msno
 # MAGIC LEFT OUTER JOIN (  -- last known expiration date headed into this period
@@ -305,7 +305,7 @@ spark.sql(f'USE {database_name}')
 # MAGIC       subscription_id,
 # MAGIC       MAX(transaction_date) as transaction_date
 # MAGIC     FROM transactions_enhanced
-# MAGIC     WHERE transaction_date < cast('2017-02-01' as date) 
+# MAGIC     WHERE transaction_date < '2017-02-01'
 # MAGIC     GROUP BY subscription_id
 # MAGIC     ) x
 # MAGIC   INNER JOIN transactions_enhanced y
@@ -327,16 +327,16 @@ spark.sql(f'USE {database_name}')
 # MAGIC       a.msno,
 # MAGIC       b.subscription_id,
 # MAGIC       CASE 
-# MAGIC         WHEN b.subscription_start < cast('2017-02-01' as date)  - interval 30 days THEN cast('2017-02-01' as date)  - interval 30 days 
+# MAGIC         WHEN b.subscription_start < '2017-02-01' - interval 30 days THEN '2017-02-01' - interval 30 days 
 # MAGIC         ELSE b.subscription_start 
 # MAGIC         END as start_at,
-# MAGIC       cast('2017-02-01' as date)  - interval 1 day as end_at,
+# MAGIC       '2017-02-01' - interval 1 day as end_at,
 # MAGIC       c.last_at as last_exp_at
 # MAGIC     FROM train a
 # MAGIC     LEFT OUTER JOIN (
 # MAGIC       SELECT *
 # MAGIC       FROM subscription_windows 
-# MAGIC       WHERE subscription_start < cast('2017-02-01' as date)  AND subscription_end > cast('2017-02-01' as date)  - interval 30 days
+# MAGIC       WHERE subscription_start < '2017-02-01' AND subscription_end > '2017-02-01' - interval 30 days
 # MAGIC       )b
 # MAGIC       ON a.msno=b.msno
 # MAGIC     LEFT OUTER JOIN (  -- last known expiration date headed into this period
@@ -348,7 +348,7 @@ spark.sql(f'USE {database_name}')
 # MAGIC           subscription_id,
 # MAGIC           MAX(transaction_date) as transaction_date
 # MAGIC         FROM transactions_enhanced
-# MAGIC         WHERE transaction_date < cast('2017-02-01' as date) 
+# MAGIC         WHERE transaction_date < '2017-02-01'
 # MAGIC         GROUP BY subscription_id
 # MAGIC         ) x
 # MAGIC       INNER JOIN transactions_enhanced y
@@ -401,16 +401,16 @@ spark.sql(f'USE {database_name}')
 # MAGIC       a.msno,
 # MAGIC       b.subscription_id,
 # MAGIC       CASE 
-# MAGIC         WHEN b.subscription_start < cast('2017-02-01' as date)  - interval 30 days THEN cast('2017-02-01' as date)  - interval 30 days 
+# MAGIC         WHEN b.subscription_start < '2017-02-01' - interval 30 days THEN '2017-02-01' - interval 30 days 
 # MAGIC         ELSE b.subscription_start 
 # MAGIC         END as start_at,
-# MAGIC       cast('2017-02-01' as date)  - interval 1 day as end_at,
+# MAGIC       '2017-02-01' - interval 1 day as end_at,
 # MAGIC       c.last_at as last_exp_at
 # MAGIC     FROM train a
 # MAGIC     LEFT OUTER JOIN (
 # MAGIC       SELECT *
 # MAGIC       FROM subscription_windows 
-# MAGIC       WHERE subscription_start < cast('2017-02-01' as date)  AND subscription_end > cast('2017-02-01' as date)  - interval 30 days
+# MAGIC       WHERE subscription_start < '2017-02-01' AND subscription_end > '2017-02-01' - interval 30 days
 # MAGIC       )b
 # MAGIC       ON a.msno=b.msno
 # MAGIC     LEFT OUTER JOIN (  -- last known expiration date headed into this period
@@ -422,7 +422,7 @@ spark.sql(f'USE {database_name}')
 # MAGIC           subscription_id,
 # MAGIC           MAX(transaction_date) as transaction_date
 # MAGIC         FROM transactions_enhanced
-# MAGIC         WHERE transaction_date < cast('2017-02-01' as date) 
+# MAGIC         WHERE transaction_date < '2017-02-01'
 # MAGIC         GROUP BY subscription_id
 # MAGIC         ) x
 # MAGIC       INNER JOIN transactions_enhanced y

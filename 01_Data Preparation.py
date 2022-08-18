@@ -221,15 +221,15 @@ shutil.rmtree('dbfs/tmp/kkbox_churn/silver/train', ignore_errors=True)
 
 # DBTITLE 1,Generate Training Labels (Logic Provided by KKBox)
 # MAGIC %scala
-# MAGIC 
+# MAGIC  
 # MAGIC import java.time.{LocalDate}
 # MAGIC import java.time.format.DateTimeFormatter
 # MAGIC import java.time.temporal.ChronoUnit
-# MAGIC 
+# MAGIC  
 # MAGIC import org.apache.spark.sql.{Row, SparkSession}
 # MAGIC import org.apache.spark.sql.functions._
 # MAGIC import scala.collection.mutable
-# MAGIC 
+# MAGIC  
 # MAGIC def calculateLastday(wrappedArray: mutable.WrappedArray[Row]) :String ={
 # MAGIC   val orderedList = wrappedArray.sortWith((x:Row, y:Row) => {
 # MAGIC     if(x.getAs[String]("transaction_date") != y.getAs[String]("transaction_date")) {
@@ -239,11 +239,11 @@ shutil.rmtree('dbfs/tmp/kkbox_churn/silver/train', ignore_errors=True)
 # MAGIC       val x_sig = x.getAs[String]("plan_list_price") +
 # MAGIC         x.getAs[String]("payment_plan_days") +
 # MAGIC         x.getAs[String]("payment_method_id")
-# MAGIC 
+# MAGIC  
 # MAGIC       val y_sig = y.getAs[String]("plan_list_price") +
 # MAGIC         y.getAs[String]("payment_plan_days") +
 # MAGIC         y.getAs[String]("payment_method_id")
-# MAGIC 
+# MAGIC  
 # MAGIC       //same plan, always subscribe then unsubscribe
 # MAGIC       if(x_sig != y_sig) {
 # MAGIC         x_sig > y_sig
@@ -263,7 +263,7 @@ shutil.rmtree('dbfs/tmp/kkbox_churn/silver/train', ignore_errors=True)
 # MAGIC   })
 # MAGIC   orderedList.last.getAs[String]("membership_expire_date")
 # MAGIC }
-# MAGIC 
+# MAGIC  
 # MAGIC def calculateRenewalGap(log:mutable.WrappedArray[Row], lastExpiration: String): Int = {
 # MAGIC   val orderedDates = log.sortWith((x:Row, y:Row) => {
 # MAGIC     if(x.getAs[String]("transaction_date") != y.getAs[String]("transaction_date")) {
@@ -273,11 +273,11 @@ shutil.rmtree('dbfs/tmp/kkbox_churn/silver/train', ignore_errors=True)
 # MAGIC       val x_sig = x.getAs[String]("plan_list_price") +
 # MAGIC         x.getAs[String]("payment_plan_days") +
 # MAGIC         x.getAs[String]("payment_method_id")
-# MAGIC 
+# MAGIC  
 # MAGIC       val y_sig = y.getAs[String]("plan_list_price") +
 # MAGIC         y.getAs[String]("payment_plan_days") +
 # MAGIC         y.getAs[String]("payment_method_id")
-# MAGIC 
+# MAGIC  
 # MAGIC       //same data same plan transaction, assumption: subscribe then unsubscribe
 # MAGIC       if(x_sig != y_sig) {
 # MAGIC         x_sig > y_sig
@@ -295,7 +295,7 @@ shutil.rmtree('dbfs/tmp/kkbox_churn/silver/train', ignore_errors=True)
 # MAGIC       }
 # MAGIC     }
 # MAGIC   })
-# MAGIC 
+# MAGIC  
 # MAGIC   //Search for the first subscription after expiration
 # MAGIC   //If active cancel is the first action, find the gap between the cancellation and renewal
 # MAGIC   val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -310,7 +310,7 @@ shutil.rmtree('dbfs/tmp/kkbox_churn/silver/train', ignore_errors=True)
 # MAGIC     val expireString = date.getAs[String]("membership_expire_date")
 # MAGIC     val expireDate = LocalDate.parse(s"${expireString.substring(0,4)}-${expireString.substring(4,6)}-${expireString.substring(6,8)}", formatter)
 # MAGIC     val isCancel = date.getAs[String]("is_cancel")
-# MAGIC 
+# MAGIC  
 # MAGIC     if(isCancel == "1") {
 # MAGIC       if(expireDate.isBefore(lastExpireDate)) {
 # MAGIC         lastExpireDate = expireDate
@@ -321,17 +321,17 @@ shutil.rmtree('dbfs/tmp/kkbox_churn/silver/train', ignore_errors=True)
 # MAGIC   }
 # MAGIC   gap
 # MAGIC }
-# MAGIC 
+# MAGIC  
 # MAGIC val data = spark
 # MAGIC   .read
 # MAGIC   .option("header", value = true)
-# MAGIC   .csv("/tmp/kkbox_churn/transactions/")
-# MAGIC 
+# MAGIC   .csv("/tmp/kkbox/transactions/")
+# MAGIC  
 # MAGIC val historyCutoff = "20170131"
-# MAGIC 
+# MAGIC  
 # MAGIC val historyData = data.filter(col("transaction_date")>="20170101" and col("transaction_date")<=lit(historyCutoff))
 # MAGIC val futureData = data.filter(col("transaction_date") > lit(historyCutoff))
-# MAGIC 
+# MAGIC  
 # MAGIC val calculateLastdayUDF = udf(calculateLastday _)
 # MAGIC val userExpire = historyData
 # MAGIC   .groupBy("msno")
@@ -349,22 +349,22 @@ shutil.rmtree('dbfs/tmp/kkbox_churn/silver/train', ignore_errors=True)
 # MAGIC       )
 # MAGIC     ).alias("last_expire")
 # MAGIC   )
-# MAGIC 
+# MAGIC  
 # MAGIC val predictionCandidates = userExpire
 # MAGIC   .filter(
 # MAGIC     col("last_expire") >= "20170201" and col("last_expire") <= "20170228"
 # MAGIC   )
 # MAGIC   .select("msno", "last_expire")
-# MAGIC 
-# MAGIC 
+# MAGIC  
+# MAGIC  
 # MAGIC val joinedData = predictionCandidates
 # MAGIC   .join(futureData,Seq("msno"), "left_outer")
-# MAGIC 
+# MAGIC  
 # MAGIC val noActivity = joinedData
 # MAGIC   .filter(col("payment_method_id").isNull)
 # MAGIC   .withColumn("is_churn", lit(1))
-# MAGIC 
-# MAGIC 
+# MAGIC  
+# MAGIC  
 # MAGIC val calculateRenewalGapUDF = udf(calculateRenewalGap _)
 # MAGIC val renewals = joinedData
 # MAGIC   .filter(col("payment_method_id").isNotNull)
@@ -384,12 +384,12 @@ shutil.rmtree('dbfs/tmp/kkbox_churn/silver/train', ignore_errors=True)
 # MAGIC       col("last_expire")
 # MAGIC     ).alias("gap")
 # MAGIC   )
-# MAGIC 
+# MAGIC  
 # MAGIC val validRenewals = renewals.filter(col("gap") < 30)
 # MAGIC   .withColumn("is_churn", lit(0))
 # MAGIC val lateRenewals = renewals.filter(col("gap") >= 30)
 # MAGIC   .withColumn("is_churn", lit(1))
-# MAGIC 
+# MAGIC  
 # MAGIC val resultSet = validRenewals
 # MAGIC   .select("msno","is_churn")
 # MAGIC   .union(
@@ -399,7 +399,7 @@ shutil.rmtree('dbfs/tmp/kkbox_churn/silver/train', ignore_errors=True)
 # MAGIC         noActivity.select("msno","is_churn")
 # MAGIC       )
 # MAGIC   )
-# MAGIC 
+# MAGIC  
 # MAGIC resultSet.write.format("delta").mode("overwrite").save("/tmp/kkbox_churn/silver/train/")
 
 # COMMAND ----------
