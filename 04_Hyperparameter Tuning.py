@@ -1,5 +1,6 @@
 # Databricks notebook source
 # MAGIC %md The purpose of this notebook is to tune the hyperparameters associated with our candidate models to arrive at an optimum configuration. 
+# MAGIC This series of notebook is also available at https://github.com/databricks-industry-solutions/churn. You can find more information about this accelerator at https://www.databricks.com/solutions/accelerators/retention-management.
 
 # COMMAND ----------
 
