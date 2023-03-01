@@ -97,7 +97,7 @@ else:
       .save('/tmp/kkbox_churn/silver/members')
     )
 
-    # create table object to make delta lake queriable
+    # create table object to make delta lake queryable
   _ = spark.sql('''
       CREATE TABLE members 
       USING DELTA 
@@ -146,7 +146,7 @@ if not skip_reload:
       .save('/tmp/kkbox_churn/silver/transactions')
     )
 
-    # create table object to make delta lake queriable
+    # create table object to make delta lake queryable
   _ = spark.sql('''
       CREATE TABLE transactions
       USING DELTA 
@@ -194,7 +194,7 @@ if not skip_reload:
       .save('/tmp/kkbox_churn/silver/user_logs')
     )
 
-  # create table object to make delta lake queriable
+  # create table object to make delta lake queryable
   _ = spark.sql('''
     CREATE TABLE IF NOT EXISTS user_logs
     USING DELTA 
@@ -256,7 +256,7 @@ shutil.rmtree('dbfs/tmp/kkbox_churn/silver/train', ignore_errors=True)
 # MAGIC           //multiple renewal, expiration date keeps extending
 # MAGIC           x.getAs[String]("membership_expire_date") < y.getAs[String]("membership_expire_date")
 # MAGIC         } else {
-# MAGIC           //same day same plan transaction: subscription preceeds cancellation
+# MAGIC           //same day same plan transaction: subscription precedes cancellation
 # MAGIC           x.getAs[String]("is_cancel") < y.getAs[String]("is_cancel")
 # MAGIC         }
 # MAGIC       }
@@ -460,7 +460,7 @@ shutil.rmtree('/dbfs/tmp/kkbox_churn/silver/test', ignore_errors=True)
 # MAGIC           //multiple renewal, expiration date keeps extending
 # MAGIC           x.getAs[String]("membership_expire_date") < y.getAs[String]("membership_expire_date")
 # MAGIC         } else {
-# MAGIC           //same day same plan transaction: subscription preceeds cancellation
+# MAGIC           //same day same plan transaction: subscription precedes cancellation
 # MAGIC           x.getAs[String]("is_cancel") < y.getAs[String]("is_cancel")
 # MAGIC         }
 # MAGIC       }

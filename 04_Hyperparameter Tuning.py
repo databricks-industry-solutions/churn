@@ -53,7 +53,7 @@ mlflow.set_experiment(experiment_name)
 # COMMAND ----------
 
 # DBTITLE 1,Load Features & Labels
-# retreive training & testing data
+# retrieve training & testing data
 train = spark.sql('''
   SELECT
     a.*,
@@ -226,7 +226,7 @@ def evaluate_model(hyperopt_params):
 
 # COMMAND ----------
 
-# MAGIC %md The first part of the model evaluation function retrieves from memory replicated copies of our training and testing feature and label sets.  Our intent is to leverage SparkTrials in combination with hyperopt to parallelize the training of models across a Spark cluster, allowing us to perform multiple, simultaneous model training evaluation runs and reduce the overall time required to navigate the seach space.  By replicating our datasets to the worker nodes of the cluster, a task performed in the next cell, copies of the data needed for training and evaluation can be efficiently made available to the function with minimal networking overhead:
+# MAGIC %md The first part of the model evaluation function retrieves from memory replicated copies of our training and testing feature and label sets.  Our intent is to leverage SparkTrials in combination with hyperopt to parallelize the training of models across a Spark cluster, allowing us to perform multiple, simultaneous model training evaluation runs and reduce the overall time required to navigate the search space.  By replicating our datasets to the worker nodes of the cluster, a task performed in the next cell, copies of the data needed for training and evaluation can be efficiently made available to the function with minimal networking overhead:
 # MAGIC 
 # MAGIC **NOTE** See the Distributed Hyperopt [best practices documentation](https://docs.databricks.com/applications/machine-learning/automl-hyperparam-tuning/hyperopt-best-practices.html#handle-datasets-of-different-orders-of-magnitude-notebook) for more options for data distribution.
 
@@ -275,7 +275,7 @@ search_space = {
 # COMMAND ----------
 
 # perform evaluation
-with mlflow.start_run(run_name='XGBClassifer'):
+with mlflow.start_run(run_name='XGBClassifier'):
   argmin = fmin(
     fn=evaluate_model,
     space=search_space,
@@ -360,7 +360,7 @@ with mlflow.start_run(run_name='XGB Final Model') as run:
 
 # COMMAND ----------
 
-# MAGIC %md ###Step 3: Train HistGradientBoostingClassifier & MLPClassifer Models
+# MAGIC %md ###Step 3: Train HistGradientBoostingClassifier & MLPClassifier Models
 # MAGIC 
 # MAGIC Using the same techniques as shown in the last step (but omitted here for brevity), we've identified an optimal set of parameters for the training of the HistGradientBoostingClassifier model.  We can now perform a final training run for this model:
 
@@ -476,7 +476,7 @@ with mlflow.start_run(run_name='MLP Final Model') as run:
 # DBTITLE 1,Retrieve Trained Models
 models = []
 
-# for each final training run, retreive its model from mlflow 
+# for each final training run, retrieve its model from mlflow 
 for run_id in run_ids:
   models += [(run_id[0], mlflow.sklearn.load_model('runs:/{0}/model'.format(run_id[1])))] 
 
@@ -508,7 +508,7 @@ search_space
 # DBTITLE 1,Define Ensemble Evaluation Function
 def evaluate_model(hyperopt_params):
   
-  # accesss replicated input data
+  # access replicated input data
   X_train_input = X_train_broadcast.value
   y_train_input = y_train_broadcast.value
   X_test_input = X_test_broadcast.value
@@ -562,7 +562,7 @@ y_train_broadcast = sc.broadcast(y_train)
 y_test_broadcast = sc.broadcast(y_test)
 models_broadcast = sc.broadcast(models)
 
-# perform evalaution
+# perform evaluation
 with mlflow.start_run(run_name='Voting: {0}'.format('weights')):
   argmin = fmin(
     fn=evaluate_model,
