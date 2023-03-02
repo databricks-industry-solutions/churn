@@ -255,7 +255,7 @@ trained_y_prob[110:120]
 label_counts = np.unique(y_train, return_counts=True)[1]
 negclass_prop = label_counts[0]/np.sum(label_counts)
 
-# construct a set of class probabilies representing class proportions in training set
+# construct a set of class probabilities representing class proportions in training set
 naive_y_prob = np.empty(trained_y_prob.shape, dtype='float')
 naive_y_prob[:] = [negclass_prop, 1-negclass_prop]
 

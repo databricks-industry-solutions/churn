@@ -12,7 +12,7 @@
 # MAGIC 
 # MAGIC To get started, we'll first retrieve feature data associated with the period for which we intend to make predictions.  Given we trained our model on February 2017 data and evaluated our model on March 2017 data, it would make sense for us to generate prediction output for April 2017.  That said, we want to avoid stepping on the toes of the Kaggle competition associated with this dataset so that we'll limit ourselves to generating March 2017 prediction output.
 # MAGIC 
-# MAGIC Unlike in previous notebooks, we'll limit data retrieval to features and a customer identifier, ignoring the churn lables as we would not have these if we were making actual future predictions. We'll load the data first into a Spark DataFrame and then into a pandas dataframe so that we might demonstrate two different techniques for generating output, each of which depends on a different dataframe type:
+# MAGIC Unlike in previous notebooks, we'll limit data retrieval to features and a customer identifier, ignoring the churn labels as we would not have these if we were making actual future predictions. We'll load the data first into a Spark DataFrame and then into a pandas dataframe so that we might demonstrate two different techniques for generating output, each of which depends on a different dataframe type:
 
 # COMMAND ----------
 
