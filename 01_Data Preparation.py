@@ -64,7 +64,7 @@ else:
   _ = spark.sql(f'USE {database_name}')
 
   # drop any old delta lake files that might have been created
-  dbutils.fs.rm('/tmp/kkbox_churn/silver/members', True)
+  shutil.rmtree('/dbfs/tmp/kkbox_churn/silver/members', ignore_errors=True)
 
   # members dataset schema
   member_schema = StructType([
@@ -110,7 +110,7 @@ else:
 if not skip_reload:
 
   # drop any old delta lake files that might have been created
-  shutil.rmtree('dbfs/tmp/kkbox_churn/silver/transactions', ignore_errors=True)
+  shutil.rmtree('/dbfs/tmp/kkbox_churn/silver/transactions', ignore_errors=True)
 
   # transaction dataset schema
   transaction_schema = StructType([
@@ -158,7 +158,7 @@ if not skip_reload:
 # DBTITLE 1,Load User Logs Table
 if not skip_reload:
   # drop any old delta lake files that might have been created
-  shutil.rmtree('dbfs/tmp/kkbox_churn/silver/user_logs', ignore_errors=True)
+  shutil.rmtree('/dbfs/tmp/kkbox_churn/silver/user_logs', ignore_errors=True)
 
   # transaction dataset schema
   user_logs_schema = StructType([ 
@@ -216,7 +216,7 @@ if not skip_reload:
 # DBTITLE 1,Delete Training Labels (if exists)
 _ = spark.sql('DROP TABLE IF EXISTS train')
 
-shutil.rmtree('dbfs/tmp/kkbox_churn/silver/train', ignore_errors=True)
+shutil.rmtree('/dbfs/tmp/kkbox_churn/silver/train', ignore_errors=True)
 
 # COMMAND ----------
 
