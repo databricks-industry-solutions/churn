@@ -8,7 +8,9 @@
 # COMMAND ----------
 
 # MAGIC %md 
-# MAGIC Set Kaggle credential configuration values in the block below: You can set up a [secret scope](https://docs.databricks.com/security/secrets/secret-scopes.html) to manage credentials used in notebooks. For the block below, we have manually set up the `solution-accelerator-cicd` secret scope and saved our credentials there for internal testing purposes.
+# MAGIC Set Kaggle credential configuration values in the block below: You can set up a [secret scope](https://docs.databricks.com/security/secrets/secret-scopes.html) to manage credentials used in notebooks. See the `./RUNME` notebook for a guide and script for setting up the `solution-accelerator-cicd` secret scope to saved credentials. 
+# MAGIC
+# MAGIC Don't forget to accept the [Terms of the challenge](https://www.kaggle.com/competitions/kkbox-churn-prediction-challenge/data) before downloading data. 
 
 # COMMAND ----------
 
